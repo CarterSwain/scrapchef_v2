@@ -44,15 +44,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-     # Third-party apps
+    # Third-party apps
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',  # Google OAuth
     
     # Custom apps
     'accounts', 
-
 ]
+
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default authentication
@@ -77,7 +81,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -142,3 +146,21 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Social Authentication Settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': env("GOOGLE_CLIENT_ID"),
+            'secret': env("GOOGLE_CLIENT_SECRET"),
+        }
+    }
+}
+
+# Site ID for Django Allauth (Required)
+SITE_ID = 1
+
+# Redirects after login/logout
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
+LOGIN_REDIRECT_URL = "/"  # Redirect after login
+
