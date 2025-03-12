@@ -1,6 +1,9 @@
 from django.urls import path
-from . import views
+from .views import logout_view, profile_view
 
 urlpatterns = [
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path("profile/", profile_view, name="profile"),
+    path("logout/", logout_view, name="account_logout"),  
 ]
+
+

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home - ScrapChef{% endblock %}
+
+{% block content %}
+    <h1>Welcome, {{ user.email }}!</h1>
+    <p>This is your profile page.</p>
+    <a href="{% url 'account_logout' %}">Logout</a>
+    <p>Your AI-powered recipe generator is under development.</p>
+{% endblock %}
