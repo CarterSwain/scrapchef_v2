@@ -1,6 +1,13 @@
 {% extends "base.html" %}
+
 {% block content %}
   <h2>Generate a Recipe</h2>
+
+  <!-- Display validation error messages -->
+  {% if error_message %}
+    <p style="color: red; font-weight: bold;">{{ error_message }}</p>
+  {% endif %}
+
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
