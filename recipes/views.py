@@ -1,6 +1,7 @@
 import openai
 from django.conf import settings
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required  
 from .forms import RecipeInputForm
 
 # Initialize OpenAI client using the new API format
@@ -28,6 +29,8 @@ def generate_recipe(ingredients):
     except Exception as e:
         return f"Error generating recipe: {str(e)}"
 
+
+@login_required  # Restrict this view to logged-in users
 def recipe_view(request):
     """Handles user input and displays generated recipe."""
     recipe = None
@@ -41,3 +44,4 @@ def recipe_view(request):
         form = RecipeInputForm()
 
     return render(request, "recipes/recipe_detail.html", {"form": form, "recipe": recipe})
+
