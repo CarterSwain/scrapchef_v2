@@ -59,7 +59,6 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Default authentication
     'allauth.account.auth_backends.AuthenticationBackend',  # Allauth authentication
 ]
 
@@ -147,20 +146,49 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 # Social Authentication Settings
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True, 
         'APP': {
             'client_id': env("GOOGLE_CLIENT_ID"),
             'secret': env("GOOGLE_CLIENT_SECRET"),
-        }
+        },
     }
 }
+
+
+# Use email as the primary identifier
+ACCOUNT_LOGIN_METHODS = {'none'}
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False  
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Or set to "mandatory" if needed
+ACCOUNT_SIGNUP_REDIRECT_URL = "/"
+
 
 # Site ID for Django Allauth (Required)
 SITE_ID = 1
 
+
 # Redirects after login/logout
-ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
-LOGIN_REDIRECT_URL = "/"  # Redirect after login
+LOGIN_REDIRECT_URL = '/'  # Redirect after login
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'  # Redirect after logout
+
+
+# Allow users to sign in with Google even if their email exists
+ACCOUNT_ADAPTER = "accounts.adapters.NoPasswordAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "accounts.adapters.MySocialAccountAdapter"
+
+
+# Enable automatic linking of Google accounts with existing accounts
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"  # Or "mandatory" if you want email confirmation
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True  # Ensures unique emails
+ACCOUNT_LOGIN_METHODS = {'email'}  # Authenticate via email
+
+
 
