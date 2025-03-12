@@ -39,4 +39,7 @@ urlpatterns = [
 
     # Custom Profile view (No need to redefine profile_view)
     path("profile/", profile_view, name="profile"),
+    
+    # Recipe app
+    path("recipes/", include("recipes.urls")),
 ]
