@@ -4,7 +4,7 @@
 {% block title %}Home - ScrapChef{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ user.email }}!</h1>
+    <h1>Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}User{% endif %}!</h1>
     <p>This is your profile page.</p>
     <a href="{% url 'account_logout' %}">Logout</a>
     <p>Your AI-powered recipe generator is under development.</p>

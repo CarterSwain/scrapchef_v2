@@ -31,5 +31,18 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             # Auto-create a user if they don't exist and log them in
             sociallogin.user.is_active = True
             sociallogin.user.save()
-        
+
         return redirect("/profile/")  # Redirect to profile after successful login
+
+    def populate_user(self, request, sociallogin, data):
+        """Ensure the user's first name is saved from Google login."""
+        user = super().populate_user(request, sociallogin, data)
+
+        # Google API sends 'given_name' as the first name
+        first_name = data.get("given_name", "")
+
+        if first_name:  # Only update if first_name is available
+            user.first_name = first_name
+            user.save()  # Explicitly save the user
+
+        return user
