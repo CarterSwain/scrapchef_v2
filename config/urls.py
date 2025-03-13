@@ -45,4 +45,8 @@ urlpatterns = [
     
     # Profiles app
     path('profiles/', include('profiles.urls', namespace='profiles')),
+    
+    # Explore app
+    path("explore/", include("explore.urls")),
+
 ]
