@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Explore Recipes</h2>
+
+{% for recipe in recipes %}
+  <div class="recipe">
+    <h3>{{ recipe.title }}</h3>
+    <p>Ingredients: {{ recipe.ingredients }}</p>
+    <p>Hearts: {{ recipe.num_hearts }}</p>
+    <button onclick="heartRecipe('{{ recipe.id }}')">❤️ Heart</button>
+  </div>
+{% endfor %}
+
+<script>
+function heartRecipe(recipeId) {
+    fetch(`/explore/heart/${recipeId}/`, { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}' } })
+    .then(response => response.json())
+    .then(data => alert(data.status));
+}
+</script>
+{% endblock %}

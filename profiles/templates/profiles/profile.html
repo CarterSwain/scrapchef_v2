@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
 <h2>My Profile</h2>
 <a href="{% url 'profiles:update_preferences' %}" class="bg-green-500 text-white px-4 py-2 rounded-md mt-2 inline-block">Update Preferences</a>
 
@@ -37,3 +40,4 @@
         <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
     {% endif %}
 </div>
+{% endblock %}
