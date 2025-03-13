@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Ingredient Preferences & Diet Settings</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Preferences</button>
+  </form>
+  <a href="{% url 'profiles:profile' %}" class="bg-gray-500 text-white px-4 py-2 rounded-md mt-4 inline-block">Back to Profile</a>
+{% endblock %}
