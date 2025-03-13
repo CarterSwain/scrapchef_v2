@@ -46,7 +46,7 @@ def generate_recipe(ingredients):
                 {"role": "system", "content": "You are a professional chef who strictly follows ingredient limitations."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=300
+            max_tokens=500
         )
         return response.choices[0].message.content.strip()  # Extracting the AI-generated recipe
     except Exception as e:

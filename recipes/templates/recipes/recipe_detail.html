@@ -15,7 +15,7 @@
   </form>
 
   {% if recipe %}
-    <h3>Generated Recipe:</h3>
-    <p>{{ recipe }}</p>
+  <h3 class="text-xl font-bold mt-4">Generated Recipe:</h3>
+  <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md">{{ recipe }}</pre>
   {% endif %}
 {% endblock %}
