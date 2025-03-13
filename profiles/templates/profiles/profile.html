@@ -1,11 +1,15 @@
 <h2>Saved Recipes</h2>
+
 <ul>
     {% for recipe in page_obj %}
         <li>
-            {{ recipe.recipe_name }} - Last updated on {{ recipe.updated_at }}
+            <strong>{{ recipe.recipe_name }}</strong> - Last updated on {{ recipe.updated_at }}
+            <br>
+            <em>Ingredients:</em> {{ recipe.ingredients }}
+            <br>
             <a href="{% url 'profiles:edit_saved_recipe' recipe.id %}">Edit</a>
-
         </li>
+        <hr> <!-- Adds a separator between recipes -->
     {% empty %}
         <li>No saved recipes yet.</li>
     {% endfor %}

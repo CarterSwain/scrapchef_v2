@@ -12,6 +12,7 @@ openai_client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
 # Set up logging for tracking API errors
 logger = logging.getLogger(__name__)
 
+
 def validate_ingredients(ingredients):
     """Validates the ingredient list before sending it to OpenAI API."""
     
@@ -34,13 +35,16 @@ def validate_ingredients(ingredients):
 
     return None  # No validation errors
 
+
+
 def generate_recipe(ingredients):
     """Call OpenAI to generate a structured recipe using only the given ingredients."""
     ingredients_list = ", ".join(ingredients)
     
     prompt = (
         f"Create a simple, delicious recipe using ONLY the following ingredients: {ingredients_list}. "
-        "Do not add any extra ingredients. Provide a short title, a list of ingredients, and clear instructions."
+        "Provide a short, creative recipe title, a list of ingredients, and clear step-by-step instructions. "
+        "Format your response as:\n\nTitle: <title>\n\nIngredients:\n<list>\n\nInstructions:\n<steps>"
     )
     
     try:
@@ -60,19 +64,21 @@ def generate_recipe(ingredients):
 
         raw_recipe = response.choices[0].message.content.strip()
 
-        # Use regex to extract structured data
-        match = re.search(r'(?P<title>.*?)\n\n(?P<ingredients>Ingredients:\n.*?)(?=\n\nInstructions:)\n\n(?P<instructions>Instructions:\n.*)', raw_recipe, re.DOTALL)
+        # Use regex to extract structured data (Title, Ingredients, Instructions)
+        match = re.search(r'Title:\s*(?P<title>.*?)\n\nIngredients:\s*(?P<ingredients>.*?)\n\nInstructions:\s*(?P<instructions>.*)', raw_recipe, re.DOTALL)
+
         if match:
             recipe_data = {
                 "title": match.group("title").strip(),
-                "ingredients": match.group("ingredients").strip(),
-                "instructions": match.group("instructions").strip(),
+                "ingredients": "Ingredients:\n" + match.group("ingredients").strip(),
+                "instructions": "Instructions:\n" + match.group("instructions").strip(),
             }
         else:
+            # If regex fails, use fallback method
             recipe_data = {
-                "title": "Generated Recipe",
+                "title": f"Recipe with {ingredients_list}",  # Unique fallback title
                 "ingredients": "Ingredients:\n" + ingredients_list,
-                "instructions": raw_recipe
+                "instructions": raw_recipe  # Save full response as instructions
             }
 
         return recipe_data, None  # Return structured data and no error
@@ -88,6 +94,8 @@ def generate_recipe(ingredients):
     except Exception as e:
         logger.error(f"Unhandled error: {e}")
         return None, "Error: Something went wrong. Please try again."
+
+
 
 
 @login_required
