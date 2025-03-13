@@ -42,6 +42,18 @@ def edit_saved_recipe(request, recipe_id):
 
 
 @login_required
+def delete_saved_recipe(request, recipe_id):
+    """Delete a saved recipe only if it belongs to the logged-in user."""
+    recipe = get_object_or_404(SavedRecipe, id=recipe_id, user=request.user)
+    
+    if request.method == "POST":  # Ensure it's a POST request
+        recipe.delete()
+        return redirect('profiles:profile')  # Redirect to profile after deletion
+
+    return render(request, 'profiles/confirm_delete.html', {'recipe': recipe})
+
+
+@login_required
 def profile_view(request):
     saved_recipes = SavedRecipe.objects.filter(user=request.user).order_by('-updated_at')
 
