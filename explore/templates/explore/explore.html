@@ -5,8 +5,8 @@
 
 {% for recipe in recipes %}
   <div class="recipe">
-    <h3>{{ recipe.title }}</h3>
-    <p>Ingredients: {{ recipe.ingredients }}</p>
+    <h3>{{ recipe.recipe_name }}</h3>
+    <p>{{ recipe.ingredients }}</p>
     <p>Hearts: {{ recipe.num_hearts }}</p>
     <button onclick="heartRecipe('{{ recipe.id }}')">❤️ Heart</button>
   </div>
