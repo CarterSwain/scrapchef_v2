@@ -15,7 +15,17 @@
   </form>
 
   {% if recipe %}
-  <h3 class="text-xl font-bold mt-4">Generated Recipe:</h3>
-  <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md">{{ recipe }}</pre>
+    <h3 class="text-xl font-bold mt-4">{{ recipe.title }}</h3>
+    <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md">{{ recipe.ingredients }}</pre>
+    <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md">{{ recipe.instructions }}</pre>
+
+    <!-- Add Save Recipe Form -->
+    <form action="{% url 'profiles:save_recipe' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="recipe_name" value="{{ recipe.title }}">
+      <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}">
+      <input type="hidden" name="instructions" value="{{ recipe.instructions }}">
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2">Save Recipe</button>
+    </form>
   {% endif %}
 {% endblock %}

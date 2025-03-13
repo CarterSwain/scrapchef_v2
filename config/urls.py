@@ -40,6 +40,9 @@ urlpatterns = [
     # Custom Profile view (No need to redefine profile_view)
     path("profile/", profile_view, name="profile"),
     
-    # Recipe app
+    # Recipes app
     path("recipes/", include("recipes.urls")),
+    
+    # Profiles app
+    path('profiles/', include('profiles.urls', namespace='profiles')),
 ]
