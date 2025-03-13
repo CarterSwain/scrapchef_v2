@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .forms import IngredientPreferencesForm
 from .models import SavedRecipe, UserProfile
+from recipes.models import Recipe
 
 
 @login_required
@@ -24,25 +26,34 @@ def update_preferences(request):
 
 @login_required
 def save_recipe(request):
+    """Allow a user to save a new recipe and redirect to profile page."""
     if request.method == "POST":
         recipe_name = request.POST.get("recipe_name")
         ingredients = request.POST.get("ingredients")
         instructions = request.POST.get("instructions")
 
-        print("Saving Recipe:", recipe_name, ingredients, instructions)  # Debugging print
+        # Find or create the corresponding Recipe
+        recipe, created = Recipe.objects.get_or_create(
+            title=recipe_name,
+            defaults={
+                "ingredients": ingredients,
+                "instructions": instructions
+            }
+        )
 
-        if recipe_name and ingredients and instructions:
-            saved_recipe = SavedRecipe.objects.create(
-                user=request.user,
-                recipe_name=recipe_name,
-                ingredients=ingredients,
-                instructions=instructions
-            )
-            print("Recipe Saved Successfully:", saved_recipe)  # Debugging print
+        # Create a new SavedRecipe linked to the Recipe
+        saved_recipe = SavedRecipe.objects.create(
+            user=request.user,
+            recipe=recipe,
+            recipe_name=recipe.title,
+            ingredients=recipe.ingredients,
+            instructions=recipe.instructions
+        )
 
-            return redirect('profiles:profile')  # Redirect to profile after saving
+        return redirect("profiles:profile")  # Redirect to the user's profile page
 
-    return redirect('home')
+    return redirect("home")  # Redirect to home if accessed incorrectly
+
 
 
 @login_required
@@ -73,13 +84,22 @@ def delete_saved_recipe(request, recipe_id):
 
 @login_required
 def profile_view(request):
+    """Display user profile with saved and hearted recipes."""
+    user_profile = get_object_or_404(UserProfile, user=request.user)  # Ensure profile exists
+
+    # Fetch saved recipes for pagination
     saved_recipes = SavedRecipe.objects.filter(user=request.user).order_by('-updated_at')
 
-    # Debugging print
-    print("Saved Recipes for User:", request.user, saved_recipes)
+    # Fetch hearted recipes
+    hearted_recipes = user_profile.hearted_recipes.all()
 
+    # Pagination setup (for saved recipes)
     paginator = Paginator(saved_recipes, 5)  # Show 5 recipes per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'profiles/profile.html', {'page_obj': page_obj})
+    return render(request, "profiles/profile.html", {
+        "user_profile": user_profile,  # Pass user_profile to template
+        "page_obj": page_obj,  # Paginated saved recipes
+        "hearted_recipes": hearted_recipes  # Pass hearted recipes separately
+    })

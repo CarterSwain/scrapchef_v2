@@ -26,6 +26,21 @@
     {% endfor %}
 </ul>
 
+<h3>Hearted Recipes</h3>
+<ul>
+    {% for recipe in hearted_recipes %}
+        <li>
+            <strong>{{ recipe.recipe_name }}</strong>
+            <br>
+            <em>Ingredients:</em> {{ recipe.ingredients }}
+            <br>
+        </li>
+        <hr>
+    {% empty %}
+        <li>No hearted recipes yet.</li>
+    {% endfor %}
+</ul>
+
 <!-- Pagination Controls -->
 <div>
     {% if page_obj.has_previous %}

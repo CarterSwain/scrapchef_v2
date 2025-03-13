@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from recipes.models import Recipe 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -7,7 +8,7 @@ class UserProfile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
-      # New fields for ingredient preferences
+    # Ingredient Preferences
     ingredients_to_avoid = models.TextField(blank=True, null=True, help_text="Comma-separated list of ingredients to avoid.")
     diet_preference = models.CharField(
         max_length=50,
@@ -23,6 +24,9 @@ class UserProfile(models.Model):
         ],
         default="none"
     )
+    
+    # Track Hearted Recipes
+    hearted_recipes = models.ManyToManyField('SavedRecipe', related_name="hearted_by_users", blank=True)
 
     def __str__(self):
         return self.user.username
@@ -30,6 +34,7 @@ class UserProfile(models.Model):
 
 class SavedRecipe(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="saved_recipes")  
     recipe_name = models.CharField(max_length=255)
     ingredients = models.TextField()
     instructions = models.TextField()

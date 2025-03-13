@@ -13,10 +13,16 @@
 {% endfor %}
 
 <script>
-function heartRecipe(recipeId) {
-    fetch(`/explore/heart/${recipeId}/`, { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}' } })
-    .then(response => response.json())
-    .then(data => alert(data.status));
-}
-</script>
+    function heartRecipe(recipeId) {
+        fetch(`/explore/heart/${recipeId}/`, {  
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => alert(data.status));
+    }
+    </script>
+    
 {% endblock %}
