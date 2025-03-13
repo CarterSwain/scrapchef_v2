@@ -8,7 +8,7 @@ from recipes.models import Recipe
 
 
 def explore_page(request):
-    """Show saved recipes sorted by popularity and filtered by user preferences."""
+    """Show original recipes sorted by popularity and filtered by user preferences."""
     user = request.user
 
     # Try to get the user's profile
@@ -30,30 +30,39 @@ def explore_page(request):
         query |= Q(ingredients__icontains=ingredient)  # Case-insensitive match
 
     if excluded_ingredients:
-        saved_recipes = SavedRecipe.objects.exclude(query)
+        recipes = Recipe.objects.exclude(query)
     else:
-        saved_recipes = SavedRecipe.objects.all()
+        recipes = Recipe.objects.all()
 
     # Count how many times each recipe has been saved
-    saved_recipes = saved_recipes.values('recipe_name', 'ingredients', 'instructions').annotate(num_hearts=Count('id')).order_by('-num_hearts')
+    recipes = recipes.annotate(num_hearts=Count('saved_recipes')).order_by('-num_hearts')
 
-    return render(request, "explore/explore.html", {"recipes": saved_recipes})
-
+    return render(request, "explore/explore.html", {"recipes": recipes})
 
 
 
 @login_required
 def heart_recipe(request, recipe_id):
-    """Allow a user to heart (save) a recipe."""
-    # Get the saved recipe by ID
-    recipe = get_object_or_404(SavedRecipe, id=recipe_id)
+    """Allow a user to heart (save) a recipe to their profile."""
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
-    # Check if the user already saved this recipe
-    obj, created = SavedRecipe.objects.get_or_create(
-        user=request.user,
-        recipe_name=recipe.recipe_name,
-        ingredients=recipe.ingredients,
-        instructions=recipe.instructions
-    )
+    # Get the Recipe object
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+
+    # Find an existing saved recipe for this user and recipe (avoid duplicates)
+    saved_recipe = SavedRecipe.objects.filter(user=request.user, recipe=recipe).first()
+
+    if not saved_recipe:
+        # If no existing saved recipe, create a new one
+        saved_recipe = SavedRecipe.objects.create(
+            user=request.user,
+            recipe=recipe,
+            recipe_name=recipe.title,
+            ingredients=recipe.ingredients,
+            instructions=recipe.instructions
+        )
+
+    # Ensure it's added to hearted recipes
+    user_profile.hearted_recipes.add(saved_recipe)
 
     return JsonResponse({"status": "hearted" if created else "already hearted"})
