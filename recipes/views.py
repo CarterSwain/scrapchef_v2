@@ -5,6 +5,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required  
 from .forms import RecipeInputForm
+from profiles.models import UserProfile
 
 # Initialize OpenAI client using the new API format
 openai_client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -37,9 +38,29 @@ def validate_ingredients(ingredients):
 
 
 
-def generate_recipe(ingredients):
-    """Call OpenAI to generate a structured recipe using only the given ingredients."""
-    ingredients_list = ", ".join(ingredients)
+
+def generate_recipe(ingredients, user):
+    """Generate a structured recipe using only the given ingredients, while considering user preferences."""
+    
+    # Retrieve user preferences
+    user_profile = UserProfile.objects.filter(user=user).first()
+    
+    # Get ingredients to avoid
+    avoided_ingredients = user_profile.ingredients_to_avoid.split(",") if user_profile and user_profile.ingredients_to_avoid else []
+    avoided_ingredients = [i.strip().lower() for i in avoided_ingredients if i.strip()]
+    
+    # Filter out avoided ingredients
+    filtered_ingredients = [i for i in ingredients if i.lower() not in avoided_ingredients]
+    
+    # If all ingredients are avoided, return an error
+    if not filtered_ingredients:
+        return None, "Error: All entered ingredients are in your 'Avoid' list. Please adjust your preferences."
+
+    # Get the diet preference
+    diet_preference = user_profile.diet_preference if user_profile and user_profile.diet_preference and user_profile.diet_preference != "none" else None
+
+    # Create prompt with filtered ingredients and diet preference
+    ingredients_list = ", ".join(filtered_ingredients)
     
     prompt = (
         f"Create a simple, delicious recipe using ONLY the following ingredients: {ingredients_list}. "
@@ -47,6 +68,9 @@ def generate_recipe(ingredients):
         "Format your response as:\n\nTitle: <title>\n\nIngredients:\n<list>\n\nInstructions:\n<steps>"
     )
     
+    if diet_preference:
+        prompt += f" Ensure the recipe follows a {diet_preference} diet."
+
     try:
         response = openai_client.chat.completions.create(
             model="gpt-4-turbo",
@@ -114,7 +138,7 @@ def recipe_view(request):
             if validation_error:
                 error_message = validation_error
             else:
-                recipe, error_message = generate_recipe(ingredients)
+                recipe, error_message = generate_recipe(ingredients, request.user)
 
     else:
         form = RecipeInputForm()

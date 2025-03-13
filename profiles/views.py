@@ -1,7 +1,25 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from .models import SavedRecipe
+from .forms import IngredientPreferencesForm
+from .models import SavedRecipe, UserProfile
+
+
+@login_required
+def update_preferences(request):
+    """Allow users to update their ingredient preferences and diet choices."""
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = IngredientPreferencesForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect("profiles:profile")  # Redirect to profile after saving
+    else:
+        form = IngredientPreferencesForm(instance=user_profile)
+
+    return render(request, "profiles/preferences.html", {"form": form})
+
 
 
 @login_required
