@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     
     # Custom apps
     'accounts',
-    'recipes', 
+    'recipes',
+    'profiles', 
 ]
 
 

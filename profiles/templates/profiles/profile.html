@@ -1,0 +1,27 @@
+<h2>Saved Recipes</h2>
+<ul>
+    {% for recipe in page_obj %}
+        <li>
+            {{ recipe.recipe_name }} - Last updated on {{ recipe.updated_at }}
+            <a href="{% url 'profiles:edit_saved_recipe' recipe.id %}">Edit</a>
+
+        </li>
+    {% empty %}
+        <li>No saved recipes yet.</li>
+    {% endfor %}
+</ul>
+
+<!-- Pagination Controls -->
+<div>
+    {% if page_obj.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+</div>
