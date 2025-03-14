@@ -61,9 +61,15 @@ def heart_recipe(request, recipe_id):
 
     if saved_recipe:
         if saved_recipe in user_profile.hearted_recipes.all():
+            # Remove from 'hearted' list
             user_profile.hearted_recipes.remove(saved_recipe)
+            
+            # Delete the saved recipe from profile
+            saved_recipe.delete()
+            
             return JsonResponse({"status": "removed", "message": "You have removed this recipe from your saved recipes."})
-
+        
+        # If it was not 'hearted' before, 'heart' it
         user_profile.hearted_recipes.add(saved_recipe)
         return JsonResponse({"status": "hearted", "message": "Recipe has been hearted."})
 
