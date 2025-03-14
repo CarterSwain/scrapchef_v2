@@ -33,6 +33,9 @@ def explore_page(request):
         recipes = Recipe.objects.exclude(query)
     else:
         recipes = Recipe.objects.all()
+        
+    # Exclude the "Default Recipe" from the explore page
+    recipes = recipes.exclude(title="Default Recipe")    
 
     # Count how many times each recipe has been saved
     recipes = recipes.annotate(num_hearts=Count('saved_recipes')).order_by('-num_hearts')
@@ -49,22 +52,22 @@ def heart_recipe(request, recipe_id):
     # Get the Recipe object
     recipe = get_object_or_404(Recipe, id=recipe_id)
 
+    # Check if this is the "default recipe" (adjust title accordingly)
+    if recipe.title == "Default Recipe":
+        return JsonResponse({"status": "error", "message": "Default recipe cannot be saved."})
+
     # Find if this recipe is already saved by the user
     saved_recipe = SavedRecipe.objects.filter(user=request.user, recipe=recipe).first()
 
     if saved_recipe:
-        # If recipe is already saved, check if it's in hearted_recipes
         if saved_recipe in user_profile.hearted_recipes.all():
-            # If it is, remove it (un-heart)
             user_profile.hearted_recipes.remove(saved_recipe)
             return JsonResponse({"status": "removed", "message": "You have removed this recipe from your saved recipes."})
 
-        # Otherwise, add it back (re-heart)
         user_profile.hearted_recipes.add(saved_recipe)
         return JsonResponse({"status": "hearted", "message": "Recipe has been hearted."})
 
     else:
-        # If recipe was deleted, create a new SavedRecipe and heart it
         saved_recipe = SavedRecipe.objects.create(
             user=request.user,
             recipe=recipe,

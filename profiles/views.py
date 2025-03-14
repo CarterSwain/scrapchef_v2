@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .forms import IngredientPreferencesForm
 from .models import SavedRecipe, UserProfile
@@ -84,22 +83,21 @@ def delete_saved_recipe(request, recipe_id):
 
 @login_required
 def profile_view(request):
-    """Display user profile with saved and hearted recipes."""
-    user_profile = get_object_or_404(UserProfile, user=request.user)  # Ensure profile exists
+    """Display user profile with all saved (including hearted) recipes."""
+    user_profile = get_object_or_404(UserProfile, user=request.user)
 
-    # Fetch saved recipes for pagination
-    saved_recipes = SavedRecipe.objects.filter(user=request.user).order_by('-updated_at')
-
-    # Fetch hearted recipes
+    # Combine saved and hearted recipes without duplicates
+    saved_recipes = SavedRecipe.objects.filter(user=request.user)
     hearted_recipes = user_profile.hearted_recipes.all()
 
-    # Pagination setup (for saved recipes)
-    paginator = Paginator(saved_recipes, 5)  # Show 5 recipes per page
+    all_saved_recipes = (saved_recipes | hearted_recipes).distinct()  # Remove duplicates
+
+    # Pagination setup
+    paginator = Paginator(all_saved_recipes, 5)  # Show 5 recipes per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, "profiles/profile.html", {
-        "user_profile": user_profile,  # Pass user_profile to template
-        "page_obj": page_obj,  # Paginated saved recipes
-        "hearted_recipes": hearted_recipes  # Pass hearted recipes separately
+        "user_profile": user_profile,
+        "page_obj": page_obj,  # Includes both saved and hearted recipes
     })
