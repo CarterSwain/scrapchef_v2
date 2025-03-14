@@ -6,10 +6,26 @@
 {% for recipe in recipes %}
   <div class="recipe">
     <h3>{{ recipe.title }}</h3>
-    <p>{{ recipe.ingredients }}</p>
     <p>Hearts: {{ recipe.num_hearts }}</p>
-    <button onclick="heartRecipe('{{ recipe.id }}')">❤️ Heart</button>
+
+    <!-- Heart Button -->
+    <button onclick="heartRecipe('{{ recipe.id }}')" class="bg-red-500 text-white px-3 py-1 rounded-md ml-2">
+        ❤️ Heart
+    </button>
+
+    <!-- Show Recipe Button -->
+    <button id="toggle-btn-{{ recipe.id }}" onclick="toggleRecipe('{{ recipe.id }}')" 
+        class="bg-blue-500 text-white px-3 py-1 rounded-md ml-2">
+        Show Recipe
+    </button>
+
+    <!-- Recipe Details (Initially Hidden) -->
+    <div id="recipe-{{ recipe.id }}" style="display: none; margin-top: 10px;">
+        <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+        <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+    </div>
   </div>
+  <hr>
 {% endfor %}
 
 <script>
@@ -23,6 +39,19 @@
         .then(response => response.json())
         .then(data => alert(data.status));
     }
-    </script>
-    
+
+    function toggleRecipe(recipeId) {
+        var recipeDetails = document.getElementById("recipe-" + recipeId);
+        var toggleButton = document.getElementById("toggle-btn-" + recipeId);
+
+        if (recipeDetails.style.display === "none") {
+            recipeDetails.style.display = "block";
+            toggleButton.textContent = "Hide Recipe";  // Change text to "Hide Recipe"
+        } else {
+            recipeDetails.style.display = "none";
+            toggleButton.textContent = "Show Recipe";  // Change text back to "Show Recipe"
+        }
+    }
+</script>
+
 {% endblock %}

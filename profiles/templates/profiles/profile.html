@@ -10,15 +10,29 @@
         <li>
             <strong>{{ recipe.recipe_name }}</strong> - Last updated on {{ recipe.updated_at }}
             <br>
-            <em>Ingredients:</em> {{ recipe.ingredients }}
-            <br>
-            <a href="{% url 'profiles:edit_saved_recipe' recipe.id %}">Edit</a>
-            
-            <!-- Delete Form (POST request) -->
-            <form action="{% url 'profiles:delete_saved_recipe' recipe.id %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-md ml-2">Delete</button>
-            </form>
+
+            <!-- Show Recipe Button -->
+            <button id="toggle-btn-{{ recipe.id }}" onclick="toggleRecipe('{{ recipe.id }}')" 
+                class="bg-blue-500 text-white px-3 py-1 rounded-md ml-2">
+                Show Recipe
+            </button>
+
+            <!-- Recipe Details (Initially Hidden) -->
+            <div id="recipe-{{ recipe.id }}" style="display: none; margin-top: 10px;">
+                <p><strong>Ingredients:</strong></p>
+                <p>{{ recipe.ingredients }}</p>
+
+                <p><strong>Instructions:</strong></p>
+                <p>{{ recipe.instructions }}</p>
+
+                <a href="{% url 'profiles:edit_saved_recipe' recipe.id %}">Edit</a>
+
+                <!-- Delete Form (POST request) -->
+                <form action="{% url 'profiles:delete_saved_recipe' recipe.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-md ml-2">Delete</button>
+                </form>
+            </div>
         </li>
         <hr>
     {% empty %}
@@ -40,4 +54,21 @@
         <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
     {% endif %}
 </div>
+
+<!-- JavaScript for Toggle Functionality -->
+<script>
+    function toggleRecipe(recipeId) {
+        var recipeDetails = document.getElementById("recipe-" + recipeId);
+        var toggleButton = document.getElementById("toggle-btn-" + recipeId);
+
+        if (recipeDetails.style.display === "none") {
+            recipeDetails.style.display = "block";
+            toggleButton.textContent = "Hide Recipe";  // Change text to "Hide Recipe"
+        } else {
+            recipeDetails.style.display = "none";
+            toggleButton.textContent = "Show Recipe";  // Change text back to "Show Recipe"
+        }
+    }
+</script>
+
 {% endblock %}
