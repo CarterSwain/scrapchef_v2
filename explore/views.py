@@ -24,23 +24,41 @@ def explore_page(request):
         else []
     )
 
+    # Get user's diet preference
+    diet_preference = user_profile.diet_preference if user_profile else "none"
+
+    # Define diet-based ingredient exclusions
+    diet_exclusions = {
+        "vegan": ["chicken", "beef", "pork", "fish", "seafood", "milk", "cheese", "butter", "egg", "honey"],
+        "vegetarian": ["chicken", "beef", "pork", "fish", "seafood"],
+        "pescatarian": ["chicken", "beef", "pork"],
+        "gluten_free": ["wheat", "barley", "rye"],
+        "keto": ["sugar", "rice", "bread", "pasta", "potato"]
+    }
+
+    # Combine diet exclusions with user’s avoided ingredients
+    if diet_preference in diet_exclusions:
+        excluded_ingredients.extend(diet_exclusions[diet_preference])
+
     # Filter out recipes containing excluded ingredients
     query = Q()
     for ingredient in excluded_ingredients:
         query |= Q(ingredients__icontains=ingredient)  # Case-insensitive match
 
+    # Retrieve recipes and apply filters
+    recipes = Recipe.objects.all()
     if excluded_ingredients:
-        recipes = Recipe.objects.exclude(query)
-    else:
-        recipes = Recipe.objects.all()
-        
+        recipes = recipes.exclude(query)
+
     # Exclude the "Default Recipe" from the explore page
     recipes = recipes.exclude(title="Default Recipe")    
 
-    # Count how many times each recipe has been saved
+    # ✅ Ensure recipes are sorted by most hearts (times saved)
     recipes = recipes.annotate(num_hearts=Count('saved_recipes')).order_by('-num_hearts')
 
     return render(request, "explore/explore.html", {"recipes": recipes})
+
+
 
 
 
