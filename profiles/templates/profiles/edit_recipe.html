@@ -1,14 +1,53 @@
 <h2>Edit Recipe</h2>
+
 <form method="post">
     {% csrf_token %}
+
     <label>Name:</label>
-    <input type="text" name="recipe_name" value="{{ recipe.recipe_name }}"><br>
+    <input type="text" name="recipe_name" value="{{ recipe.recipe_name }}" class="input-field"><br>
 
     <label>Ingredients:</label>
-    <textarea name="ingredients">{{ recipe.ingredients }}</textarea><br>
+    <textarea name="ingredients" class="textarea-field">{{ recipe.ingredients }}</textarea><br>
 
     <label>Instructions:</label>
-    <textarea name="instructions">{{ recipe.instructions }}</textarea><br>
+    <textarea name="instructions" class="textarea-field">{{ recipe.instructions }}</textarea><br>
 
-    <button type="submit">Save</button>
+    <button type="submit" class="save-button">Save</button>
 </form>
+
+
+<!-- Add Styling -->
+
+<style>
+    .input-field {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .textarea-field {
+        width: 100%;
+        height: 200px;  
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: vertical;  
+    }
+
+    .save-button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .save-button:hover {
+        background-color: #218838;
+    }
+</style>
+
