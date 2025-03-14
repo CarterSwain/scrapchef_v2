@@ -43,17 +43,28 @@ def explore_page(request):
 
 @login_required
 def heart_recipe(request, recipe_id):
-    """Allow a user to heart (save) a recipe to their profile."""
+    """Allow a user to heart (save) or un-heart (remove) a recipe from their profile."""
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     # Get the Recipe object
     recipe = get_object_or_404(Recipe, id=recipe_id)
 
-    # Find an existing saved recipe for this user and recipe (avoid duplicates)
+    # Find if this recipe is already saved by the user
     saved_recipe = SavedRecipe.objects.filter(user=request.user, recipe=recipe).first()
 
-    if not saved_recipe:
-        # If no existing saved recipe, create a new one
+    if saved_recipe:
+        # If recipe is already saved, check if it's in hearted_recipes
+        if saved_recipe in user_profile.hearted_recipes.all():
+            # If it is, remove it (un-heart)
+            user_profile.hearted_recipes.remove(saved_recipe)
+            return JsonResponse({"status": "removed", "message": "You have removed this recipe from your saved recipes."})
+
+        # Otherwise, add it back (re-heart)
+        user_profile.hearted_recipes.add(saved_recipe)
+        return JsonResponse({"status": "hearted", "message": "Recipe has been hearted."})
+
+    else:
+        # If recipe was deleted, create a new SavedRecipe and heart it
         saved_recipe = SavedRecipe.objects.create(
             user=request.user,
             recipe=recipe,
@@ -61,8 +72,5 @@ def heart_recipe(request, recipe_id):
             ingredients=recipe.ingredients,
             instructions=recipe.instructions
         )
-
-    # Ensure it's added to hearted recipes
-    user_profile.hearted_recipes.add(saved_recipe)
-
-    return JsonResponse({"status": "hearted" if created else "already hearted"})
+        user_profile.hearted_recipes.add(saved_recipe)
+        return JsonResponse({"status": "hearted", "message": "Recipe has been hearted."})
