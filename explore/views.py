@@ -65,7 +65,6 @@ def explore_page(request):
 def heart_recipe(request, recipe_id):
     """Allow a user to heart (save) or un-heart (remove) a recipe from their profile."""
     
-    # Check if the user is authenticated before proceeding
     if not request.user.is_authenticated:
         return JsonResponse(
             {"status": "error", "message": "I'm sorry, you must be logged in to Heart a recipe."},
@@ -79,32 +78,30 @@ def heart_recipe(request, recipe_id):
     if recipe.title == "Default Recipe":
         return JsonResponse({"status": "error", "message": "Default recipe cannot be saved."})
 
-    # Check if the recipe is already saved in SavedRecipe
-    saved_recipe, created = SavedRecipe.objects.get_or_create(
-        user=request.user,
-        recipe=recipe,
-        defaults={
-            "recipe_name": recipe.title,
-            "ingredients": recipe.ingredients,
-            "instructions": recipe.instructions,
-        },
-    )
+    # Find if the recipe is already saved
+    saved_recipe = SavedRecipe.objects.filter(user=request.user, recipe=recipe).first()
 
-    if not created:  # Recipe was already saved
+    if saved_recipe:
         if saved_recipe in user_profile.hearted_recipes.all():
             # Remove from hearted list
             user_profile.hearted_recipes.remove(saved_recipe)
 
-            # **Delete the SavedRecipe ONLY if no other users have it saved**
-            if not SavedRecipe.objects.filter(recipe=recipe).exists():
-                saved_recipe.delete()
+            # **Now also remove it from the SavedRecipe table for this user**
+            saved_recipe.delete()
 
-            return JsonResponse({"status": "removed", "message": "Recipe removed from hearted list."})
+            return JsonResponse({"status": "removed", "message": "Recipe removed from hearted list and saved recipes."})
 
         # Otherwise, add to hearted list
         user_profile.hearted_recipes.add(saved_recipe)
         return JsonResponse({"status": "hearted", "message": "Recipe has been hearted."})
 
-    # New saved recipe is automatically added to hearted list
-    user_profile.hearted_recipes.add(saved_recipe)
-    return JsonResponse({"status": "hearted", "message": "Recipe has been hearted."})
+    else:
+        saved_recipe = SavedRecipe.objects.create(
+            user=request.user,
+            recipe=recipe,
+            recipe_name=recipe.title,
+            ingredients=recipe.ingredients,
+            instructions=recipe.instructions
+        )
+        user_profile.hearted_recipes.add(saved_recipe)
+        return JsonResponse({"status": "hearted", "message": "Recipe has been hearted."})
