@@ -29,29 +29,37 @@
 {% endfor %}
 
 <script>
-    function heartRecipe(recipeId) {
-        fetch(`/explore/heart/${recipeId}/`, {  
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => alert(data.status));
-    }
+  function heartRecipe(recipeId) {
+      fetch(`/explore/heart/${recipeId}/`, {  
+          method: 'POST',
+          headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+          }
+      })
+      .then(response => response.json().then(data => ({ status: response.status, body: data }))) // Get both status and response data
+      .then(({ status, body }) => {
+          if (status === 401) {  // If unauthorized
+              alert("I'm sorry, you must be logged in to Heart a recipe.");
+          } else {
+              alert(body.message);
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
 
-    function toggleRecipe(recipeId) {
-        var recipeDetails = document.getElementById("recipe-" + recipeId);
-        var toggleButton = document.getElementById("toggle-btn-" + recipeId);
+  function toggleRecipe(recipeId) {
+      var recipeDetails = document.getElementById("recipe-" + recipeId);
+      var toggleButton = document.getElementById("toggle-btn-" + recipeId);
 
-        if (recipeDetails.style.display === "none") {
-            recipeDetails.style.display = "block";
-            toggleButton.textContent = "Hide Recipe";  // Change text to "Hide Recipe"
-        } else {
-            recipeDetails.style.display = "none";
-            toggleButton.textContent = "Show Recipe";  // Change text back to "Show Recipe"
-        }
-    }
+      if (recipeDetails.style.display === "none") {
+          recipeDetails.style.display = "block";
+          toggleButton.textContent = "Hide Recipe";  // Change text to "Hide Recipe"
+      } else {
+          recipeDetails.style.display = "none";
+          toggleButton.textContent = "Show Recipe";  // Change text back to "Show Recipe"
+      }
+  }
 </script>
+
 
 {% endblock %}
