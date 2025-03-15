@@ -40,6 +40,9 @@ class SavedRecipe(models.Model):
     instructions = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ('user', 'recipe')
 
     def __str__(self):
-        return f"{self.recipe_name} saved by {self.user.username}"
+        return f"{self.recipe.title} saved by {self.user.email}"
