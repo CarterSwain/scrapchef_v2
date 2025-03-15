@@ -168,11 +168,11 @@ SOCIALACCOUNT_PROVIDERS = {
 
 
 # Use email as the primary identifier
-ACCOUNT_LOGIN_METHODS = {'none'}
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False  
 ACCOUNT_EMAIL_VERIFICATION = "optional"  # Or set to "mandatory" if needed
-ACCOUNT_SIGNUP_REDIRECT_URL = "/"
+
 
 
 # Site ID for Django Allauth (Required)
