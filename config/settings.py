@@ -47,6 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    # Styling
+    'tailwind',
+    'theme', # Tailwind theme app
+
+    
     # Third-party apps
     'allauth',
     'allauth.account',
@@ -195,6 +200,11 @@ SOCIALACCOUNT_EMAIL_VERIFICATION = "none"  # Or "mandatory" if you want email co
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True  # Ensures unique emails
 ACCOUNT_LOGIN_METHODS = {'email'}  # Authenticate via email
+
+
+# Styling app for Tailwind
+TAILWIND_APP_NAME = "theme"
+
 
 
 
