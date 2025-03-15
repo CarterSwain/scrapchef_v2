@@ -63,10 +63,16 @@ def explore_page(request):
 
 
 
-
-@login_required
 def heart_recipe(request, recipe_id):
     """Allow a user to heart (save) or un-heart (remove) a recipe from their profile."""
+    
+    # Check if the user is authenticated before proceeding
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {"status": "error", "message": "I'm sorry, you must be logged in to Heart a recipe."},
+            status=401,  # HTTP 401 Unauthorized
+        )
+        
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     recipe = get_object_or_404(Recipe, id=recipe_id)
 
