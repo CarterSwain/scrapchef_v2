@@ -29,7 +29,7 @@ class UserProfile(models.Model):
     hearted_recipes = models.ManyToManyField('SavedRecipe', related_name="hearted_by_users", blank=True)
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
 
 
 class SavedRecipe(models.Model):

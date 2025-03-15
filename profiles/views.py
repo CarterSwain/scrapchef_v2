@@ -90,7 +90,7 @@ def profile_view(request):
     saved_recipes = SavedRecipe.objects.filter(user=request.user)
     hearted_recipes = user_profile.hearted_recipes.all()
 
-    all_saved_recipes = (saved_recipes | hearted_recipes).distinct()  # Remove duplicates
+    all_saved_recipes = (saved_recipes | hearted_recipes).distinct().order_by('-created_at') 
 
     # Pagination setup
     paginator = Paginator(all_saved_recipes, 5)  # Show 5 recipes per page
@@ -101,3 +101,4 @@ def profile_view(request):
         "user_profile": user_profile,
         "page_obj": page_obj,  # Includes both saved and hearted recipes
     })
+

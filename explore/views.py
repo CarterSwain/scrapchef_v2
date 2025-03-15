@@ -62,7 +62,6 @@ def explore_page(request):
 
 
 
-
 def heart_recipe(request, recipe_id):
     """Allow a user to heart (save) or un-heart (remove) a recipe from their profile."""
     
