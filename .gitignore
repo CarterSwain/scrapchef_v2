@@ -24,3 +24,4 @@ db.sqlite3
 theme/static/css/output.css
 node_modules/
 
+.env
