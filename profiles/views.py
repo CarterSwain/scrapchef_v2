@@ -84,7 +84,7 @@ def delete_saved_recipe(request, recipe_id):
 @login_required
 def profile_view(request):
     """Display user profile with all saved (including hearted) recipes."""
-    user_profile = get_object_or_404(UserProfile, user=request.user)
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
 
     # Combine saved and hearted recipes without duplicates
     saved_recipes = SavedRecipe.objects.filter(user=request.user)

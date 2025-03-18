@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-transparent">
+    <div class="bg-white/90 shadow-lg rounded-xl p-10 w-full max-w-lg text-center">
+        <h2 class="text-3xl font-amatic font-bold text-gray-900">Sign In via Google</h2>
+        
+        <p class="text-lg text-gray-700 mt-4">
+            You are about to sign in using your Google account.
+        </p>
+
+        <!-- Continue Button -->
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit"
+            class="mt-6 inline-flex items-center justify-center w-full sm:w-auto px-4 sm:px-5 py-2 sm:py-3 text-base sm:text-lg font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 transition">
+                Continue with Google
+            </button>
+        </form>
+
+        <!-- Cancel Button -->
+        <a href="{% url 'account_login' %}" 
+        class="mt-4 inline-flex items-center justify-center w-full sm:w-auto px-4 sm:px-5 py-2 sm:py-3 text-base sm:text-lg font-semibold text-gray-900 bg-gray-200 rounded-lg shadow-md hover:bg-gray-300 transition">
+            Cancel
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,11 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Ingredient Preferences & Diet Settings</h2>
-  <form method="post">
+  <!-- Page Heading -->
+  <section class="text-center flex flex-col items-center justify-center py-10">
+      <h2 class="text-4xl font-amatic font-bold text-gray-900">Edit Preferences</h2>
+  </section>
+
+  <!-- Preferences Form -->
+  <form method="post" class="shadow-lg rounded-xl p-6 w-full max-w-lg mx-auto py-10 bg-white/95">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Preferences</button>
+    
+    <div class="space-y-4">
+      {% for field in form %}
+        <div>
+          <label class="block text-lg font-semibold text-gray-700" for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-blue-600 transition w-full mt-4">
+      Save Preferences
+    </button>
   </form>
-  <a href="{% url 'profiles:profile' %}" class="bg-gray-500 text-white px-4 py-2 rounded-md mt-4 inline-block">Back to Profile</a>
+
+  <!-- Back to Profile Button -->
+  <div class="text-center mt-4">
+    <a href="{% url 'profiles:profile' %}" class="text-blue-600 hover:text-blue-800 text-lg font-semibold">
+      ← Back to Profile
+    </a>
+  </div>
 {% endblock %}

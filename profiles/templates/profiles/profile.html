@@ -1,74 +1,105 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>My Profile</h2>
-<a href="{% url 'profiles:update_preferences' %}" class="bg-green-500 text-white px-4 py-2 rounded-md mt-2 inline-block">Update Preferences</a>
+  <!-- Profile Heading -->
+  <section class="text-center flex flex-col items-center justify-center py-10">
+      <h2 class="text-4xl font-amatic font-bold text-gray-900">My Profile</h2>
+  </section>
 
-<h3>Saved Recipes</h3>
-<ul>
-    {% for recipe in page_obj %}
-        <li>
-            <strong>{{ recipe.recipe_name }}</strong> - Last updated on {{ recipe.updated_at }}
-            <br>
+  <!-- Update Preferences Button -->
+  <div class="text-center">
+    <a href="{% url 'profiles:update_preferences' %}" class="bg-green-500 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-green-600 transition">
+      Update Preferences
+    </a>
+  </div>
+
+
+<!-- Saved Recipes Section -->
+<section class="mt-8 bg-white/90 shadow-lg rounded-xl p-6 w-full sm:w-11/12 md:w-5/6 lg:w-4/5 max-w-screen-lg mx-auto">
+    <h3 class="text-2xl font-bold text-gray-900 mb-4">Saved Recipes</h3>
+
+    {% if page_obj %}
+      <ul class="space-y-6">
+        {% for recipe in page_obj %}
+        <li class="p-4 border rounded-lg bg-white shadow-md w-full">
+            <div class="flex justify-between items-center">
+              <p class="text-lg font-semibold">{{ recipe.recipe_name }}</p>
+              <span class="text-gray-600 text-sm">Last updated on {{ recipe.updated_at }}</span>
+            </div>
 
             <!-- Show Recipe Button -->
             <button id="toggle-btn-{{ recipe.id }}" onclick="toggleRecipe('{{ recipe.id }}')" 
-                class="bg-blue-500 text-white px-3 py-1 rounded-md ml-2">
+                class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2 shadow hover:bg-blue-600 transition">
                 Show Recipe
             </button>
 
             <!-- Recipe Details (Initially Hidden) -->
-            <div id="recipe-{{ recipe.id }}" style="display: none; margin-top: 10px;">
-                <p><strong>Ingredients:</strong></p>
-                <p>{{ recipe.ingredients }}</p>
-
-                <p><strong>Instructions:</strong></p>
-                <p>{{ recipe.instructions }}</p>
-
-                <a href="{% url 'profiles:edit_saved_recipe' recipe.id %}">Edit</a>
+            <div id="recipe-{{ recipe.id }}" class="hidden mt-4 p-4 bg-white rounded-lg shadow-md w-full">
+             
+              <pre class="whitespace-pre-wrap break-words bg-cream rounded-md text-gray-800 w-full leading-relaxed">
+                  {{ recipe.ingredients }}
+              </pre>                
+              
+              <pre class="whitespace-pre-wrap break-words bg-cream rounded-md text-gray-800 w-full leading-relaxed mt-3">
+                  {{ recipe.instructions }}
+              </pre>
+              
+              <div class="flex justify-between items-center mt-4">
+                <!-- Edit Recipe Link -->
+                <a href="{% url 'profiles:edit_saved_recipe' recipe.id %}" 
+                   class="text-blue-500 font-semibold hover:underline">
+                   Edit
+                </a>
 
                 <!-- Delete Form (POST request) -->
-                <form action="{% url 'profiles:delete_saved_recipe' recipe.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-md ml-2">Delete</button>
+                <form action="{% url 'profiles:delete_saved_recipe' recipe.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md shadow hover:bg-red-600 transition">
+                    Delete
+                  </button>
                 </form>
+              </div>
             </div>
         </li>
-        <hr>
-    {% empty %}
-        <li>No saved recipes yet.</li>
-    {% endfor %}
-</ul>
-
-<!-- Pagination Controls -->
-<div>
-    {% if page_obj.has_previous %}
-        <a href="?page=1">First</a>
-        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-center text-gray-700 mt-4">No saved recipes yet.</p>
     {% endif %}
+</section>
 
-    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
 
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-    {% endif %}
-</div>
 
-<!-- JavaScript for Toggle Functionality -->
-<script>
-    function toggleRecipe(recipeId) {
-        var recipeDetails = document.getElementById("recipe-" + recipeId);
-        var toggleButton = document.getElementById("toggle-btn-" + recipeId);
+  <!-- Pagination Controls -->
+  {% if page_obj.has_other_pages %}
+    <div class="flex justify-center space-x-4 mt-6">
+      {% if page_obj.has_previous %}
+        <a href="?page=1" class="text-blue-500 font-semibold hover:underline">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="text-blue-500 font-semibold hover:underline">Previous</a>
+      {% endif %}
 
-        if (recipeDetails.style.display === "none") {
-            recipeDetails.style.display = "block";
-            toggleButton.textContent = "Hide Recipe";  // Change text to "Hide Recipe"
-        } else {
-            recipeDetails.style.display = "none";
-            toggleButton.textContent = "Show Recipe";  // Change text back to "Show Recipe"
-        }
-    }
-</script>
+      <span class="text-gray-900">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
 
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="text-blue-500 font-semibold hover:underline">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="text-blue-500 font-semibold hover:underline">Last</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- JavaScript for Toggle Functionality -->
+  <script>
+      function toggleRecipe(recipeId) {
+          var recipeDetails = document.getElementById("recipe-" + recipeId);
+          var toggleButton = document.getElementById("toggle-btn-" + recipeId);
+
+          if (recipeDetails.classList.contains("hidden")) {
+              recipeDetails.classList.remove("hidden");
+              toggleButton.textContent = "Hide Recipe";
+          } else {
+              recipeDetails.classList.add("hidden");
+              toggleButton.textContent = "Show Recipe";
+          }
+      }
+  </script>
 {% endblock %}

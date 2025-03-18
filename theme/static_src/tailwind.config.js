@@ -5,6 +5,8 @@
  * https://unpkg.com/browse/tailwindcss@latest/stubs/defaultConfig.stub.js
  */
 
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 module.exports = {
     content: [
         /**
@@ -13,6 +15,7 @@ module.exports = {
 
         /*  Templates within theme app (<tailwind_app_name>/templates), e.g. base.html. */
         '../templates/**/*.html',
+        './theme/static/js/**/*.js',
 
         /*
          * Main templates directory of the project (BASE_DIR/templates).
@@ -42,16 +45,24 @@ module.exports = {
         // '../../**/*.py'
     ],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                poppins: ["Poppins", ...defaultTheme.fontFamily.sans],
+                amatic: ["Amatic SC", "cursive"],
+            },
+            backgroundImage: {
+                'scrapchef-desktop': "url('/static/images/ScrapChefBG2.png')",
+                'scrapchef-tablet': "url('/static/images/ScrapChefTabletBG.png')",
+                'scrapchef-mobile': "url('/static/images/ScrapChefMobileBG.png')",
+            },
+            colors: {
+                cream: "#f6e7c1", 
+            },
+        },
     },
     plugins: [
-        /**
-         * '@tailwindcss/forms' is the forms plugin that provides a minimal styling
-         * for forms. If you don't like it or have own styling for forms,
-         * comment the line below to disable '@tailwindcss/forms'.
-         */
         require('@tailwindcss/forms'),
         require('@tailwindcss/typography'),
         require('@tailwindcss/aspect-ratio'),
     ],
-}
+};

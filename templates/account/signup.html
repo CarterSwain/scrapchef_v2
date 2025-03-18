@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-{% load socialaccount %} 
-
-{% block content %}
-
-<h2>Sign up with Google</h2>
-<a href="{% provider_login_url 'google' %}?next=/profile/">Continue with Google</a>
-
-{% endblock %}

@@ -5,18 +5,6 @@ from allauth.account.forms import SignupForm
 from django.contrib.auth.decorators import login_required
 from allauth.socialaccount.models import SocialAccount
 
-# Custom Register View (Using Django Allauth's SignupForm)
-def register_view(request):
-    if request.method == "POST":
-        form = SignupForm(request.POST)  # Allauth signup form
-        if form.is_valid():
-            user = form.save(request)
-            login(request, user)  # Log the user in
-            return redirect("profile")  # Redirect to profile page after signup
-    else:
-        form = SignupForm()
-
-    return render(request, "auth/register.html", {"form": form})
 
 # Custom Login View (If not using Allauth's login)
 def login_view(request):

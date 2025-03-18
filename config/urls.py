@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import render
+from allauth.account.views import LogoutView
 from accounts.views import logout_view, profile_view
 
 # Simple home view
@@ -27,15 +28,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('', home_view, name='home'),
+    
+    # Your custom accounts URLs
+    path("accounts/", include("accounts.urls")),
 
     # Django Allauth for authentication
     path('accounts/', include('allauth.urls')),   # Django Allauth authentication URLs
 
-    # Your custom accounts URLs
-    path("accounts/", include("accounts.urls")),
-
     # Custom Logout view (No need to redefine logout_view)
-    path('logout/', logout_view, name='account_logout'),
+    path("accounts/logout/", LogoutView.as_view(template_name="account/logout.html"), name="account_logout"),
 
     # Custom Profile view (No need to redefine profile_view)
     path("profile/", profile_view, name="profile"),

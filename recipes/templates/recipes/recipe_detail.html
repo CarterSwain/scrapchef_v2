@@ -1,31 +1,72 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Generate a Recipe</h2>
+  <!-- Page Heading -->
+  <section class="text-center flex flex-col items-center justify-center py-10">
+      <h2 class="text-4xl font-amatic font-bold text-gray-900">Generate a Recipe</h2>
+  </section>
 
-  <!-- Display validation error messages -->
+  <!-- Display Validation Errors -->
   {% if error_message %}
-    <p style="color: red; font-weight: bold;">{{ error_message }}</p>
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-4 w-full max-w-lg mx-auto rounded-md">
+      <p class="font-semibold">{{ error_message }}</p>
+    </div>
   {% endif %}
 
-  <form method="post">
+  <!-- Recipe Generation Form -->
+  <form method="post" class="bg-white/90 shadow-lg rounded-xl p-6 w-full max-w-lg mx-auto" onsubmit="showLoadingSpinner()">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Generate Recipe</button>
+    
+    <div class="mb-4">
+      <label class="block text-lg font-semibold text-gray-700" for="id_ingredients">Enter Ingredients:</label>
+      {{ form.ingredients }}
+    </div>
+
+    <button type="submit" id="generate-btn" class="bg-green-500 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-green-600 transition w-full">
+      Generate Recipe
+    </button>
+
+    <!-- Loading Spinner (Hidden Initially) -->
+    <div id="loading-spinner" class="hidden flex justify-center items-center mt-4">
+      <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-opacity-75"></div>
+      <span class="ml-2 text-lg font-semibold text-gray-700">Turning scraps into magic...</span>
+    </div>
   </form>
 
+  <!-- Recipe Display Section -->
   {% if recipe %}
-    <h3 class="text-xl font-bold mt-4">{{ recipe.title }}</h3>
-    <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md">{{ recipe.ingredients }}</pre>
-    <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md">{{ recipe.instructions }}</pre>
+    <div class="mt-10 bg-white/90 shadow-lg rounded-xl p-6 w-full max-w-lg mx-auto">
+      <h3 class="text-2xl font-bold text-gray-900">{{ recipe.title }}</h3>
 
-    <!-- Add Save Recipe Form -->
-    <form action="{% url 'profiles:save_recipe' %}" method="post">
-      {% csrf_token %}
-      <input type="hidden" name="recipe_name" value="{{ recipe.title }}">
-      <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}">
-      <input type="hidden" name="instructions" value="{{ recipe.instructions }}">
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2">Save Recipe</button>
-    </form>
+      <div class="mt-4">
+        <h4 class="text-lg font-semibold text-gray-800">Ingredients:</h4>
+        <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md text-gray-700">{{ recipe.ingredients }}</pre>
+      </div>
+
+      <div class="mt-4">
+        <h4 class="text-lg font-semibold text-gray-800">Instructions:</h4>
+        <pre class="whitespace-pre-wrap bg-gray-100 p-4 rounded-md text-gray-700">{{ recipe.instructions }}</pre>
+      </div>
+
+      <!-- Save Recipe Form -->
+      <form action="{% url 'profiles:save_recipe' %}" method="post" class="mt-6">
+        {% csrf_token %}
+        <input type="hidden" name="recipe_name" value="{{ recipe.title }}">
+        <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}">
+        <input type="hidden" name="instructions" value="{{ recipe.instructions }}">
+
+        <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-blue-600 transition w-full">
+          Save Recipe
+        </button>
+      </form>
+    </div>
   {% endif %}
+
+  <!-- JavaScript for Spinner -->
+  <script>
+    function showLoadingSpinner() {
+      document.getElementById("generate-btn").disabled = true; // Disable button
+      document.getElementById("loading-spinner").classList.remove("hidden"); // Show spinner
+    }
+  </script>
 {% endblock %}

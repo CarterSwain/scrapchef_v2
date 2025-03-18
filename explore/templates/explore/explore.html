@@ -1,65 +1,82 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Explore Recipes</h2>
+  <!-- Page Heading -->
+  <section class="text-center flex flex-col items-center justify-center py-10">
+      <h2 class="text-4xl font-amatic font-bold text-gray-900">Explore User Recipes</h2>
+      <p>(Recipes shown reflect your saved preferences.)</p>
+  </section>
 
-{% for recipe in recipes %}
-  <div class="recipe">
-    <h3>{{ recipe.title }}</h3>
-    <p>Hearts: {{ recipe.num_hearts }}</p>
+  <!-- Recipe Cards Container -->
+  <div class="max-w-4xl mx-auto space-y-6">
+    {% for recipe in recipes %}
+      <div class="bg-white/90 shadow-lg rounded-xl p-6">
+        <!-- Recipe Title & Hearts Count -->
+        <div class="flex justify-between items-center">
+          <h3 class="text-2xl font-semibold text-gray-900">{{ recipe.title }}</h3>
+          <p class="text-gray-700 font-semibold">🖤 {{ recipe.num_hearts }}</p>
+        </div>
 
-    <!-- Heart Button -->
-    <button onclick="heartRecipe('{{ recipe.id }}')" class="bg-red-500 text-white px-3 py-1 rounded-md ml-2">
-        ❤️ Heart
-    </button>
+        <!-- Buttons: Heart & Show Recipe -->
+        <div class="mt-3 flex space-x-3">
+          <button onclick="heartRecipe('{{ recipe.id }}')" 
+            class="bg-white text-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-sm sm:text-md font-semibold shadow-lg hover:bg-red-200 transition">
+            ❤️ Save
+          </button>
 
-    <!-- Show Recipe Button -->
-    <button id="toggle-btn-{{ recipe.id }}" onclick="toggleRecipe('{{ recipe.id }}')" 
-        class="bg-blue-500 text-white px-3 py-1 rounded-md ml-2">
-        Show Recipe
-    </button>
+          <button id="toggle-btn-{{ recipe.id }}" onclick="toggleRecipe('{{ recipe.id }}')" 
+            class="bg-blue-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-sm sm:text-md font-semibold shadow-md hover:bg-blue-600 transition">
+            Show Recipe
+          </button>
+        </div>
 
-    <!-- Recipe Details (Initially Hidden) -->
-    <div id="recipe-{{ recipe.id }}" style="display: none; margin-top: 10px;">
-        <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-        <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-    </div>
+        <!-- Recipe Details (Initially Hidden) -->
+        <div id="recipe-{{ recipe.id }}" class="hidden mt-4">
+          <div class="mt-4">
+            <h4 class="text-lg font-semibold text-gray-800">Ingredients:</h4>
+            <pre class="whitespace-pre-wrap bg-yellow-50 p-4 rounded-md text-gray-700">{{ recipe.ingredients }}</pre>
+          </div>
+
+          <div class="mt-4">
+            <h4 class="text-lg font-semibold text-gray-800">Instructions:</h4>
+            <pre class="whitespace-pre-wrap bg-yellow-50 p-4 rounded-md text-gray-700">{{ recipe.instructions }}</pre>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center text-lg text-gray-700">No recipes found. Be the first to generate one!</p>
+    {% endfor %}
   </div>
-  <hr>
-{% endfor %}
 
-<script>
-  function heartRecipe(recipeId) {
-      fetch(`/explore/heart/${recipeId}/`, {  
-          method: 'POST',
-          headers: {
-              'X-CSRFToken': '{{ csrf_token }}'
-          }
-      })
-      .then(response => response.json().then(data => ({ status: response.status, body: data }))) // Get both status and response data
-      .then(({ status, body }) => {
-          if (status === 401) {  // If unauthorized
-              alert("I'm sorry, you must be logged in to Heart a recipe.");
-          } else {
-              alert(body.message);
-          }
-      })
-      .catch(error => console.error('Error:', error));
-  }
+  <!-- JavaScript for Hearting & Toggle -->
+  <script>
+    function heartRecipe(recipeId) {
+        fetch(`/explore/heart/${recipeId}/`, {  
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status === 401) {  
+                alert("I'm sorry, you must be logged in to Heart a recipe.");
+            } else {
+                alert(body.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
-  function toggleRecipe(recipeId) {
-      var recipeDetails = document.getElementById("recipe-" + recipeId);
-      var toggleButton = document.getElementById("toggle-btn-" + recipeId);
+    function toggleRecipe(recipeId) {
+        var recipeDetails = document.getElementById("recipe-" + recipeId);
+        var toggleButton = document.getElementById("toggle-btn-" + recipeId);
 
-      if (recipeDetails.style.display === "none") {
-          recipeDetails.style.display = "block";
-          toggleButton.textContent = "Hide Recipe";  // Change text to "Hide Recipe"
-      } else {
-          recipeDetails.style.display = "none";
-          toggleButton.textContent = "Show Recipe";  // Change text back to "Show Recipe"
-      }
-  }
-</script>
-
-
+        if (recipeDetails.classList.contains("hidden")) {
+            recipeDetails.classList.remove("hidden");
+            toggleButton.textContent = "Hide Recipe"; 
+        } else {
+            recipeDetails.classList.add("hidden");
+            toggleButton.textContent = "Show Recipe"; 
+        }
+    }
+  </script>
 {% endblock %}

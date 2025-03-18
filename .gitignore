@@ -1,5 +1,6 @@
 # Ignore virtual environment
 venv_scrapchef/
+venve/
 
 # Ignore Python cache files
 __pycache__/
@@ -7,12 +8,19 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Ignore environment variables
+# Ignore environment variables 
 .env
+.env.local
 
 # Ignore compiled and temporary files
 *.log
 db.sqlite3
 
+
 # Ignore VS Code settings (if applicable)
 .vscode/
+
+# Tailwind build files
+theme/static/css/output.css
+node_modules/
+

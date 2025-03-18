@@ -4,8 +4,35 @@
 {% block title %}Home - ScrapChef{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}User{% endif %}!</h1>
-    <p>This is your profile page.</p>
-    <a href="{% url 'account_logout' %}">Logout</a>
-    <p>Your AI-powered recipe generator is under development.</p>
+<div class="flex flex-col items-center justify-center text-center py-16">
+    <!-- Welcome Message -->
+    <h1 class="text-4xl font-amatic font-bold text-gray-900">
+        Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}User{% endif %}!
+    </h1>
+
+    <p class="text-lg text-gray-700 mt-2">
+        What would you like to do next?
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="mt-6 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0 justify-center items-center w-full">
+        <a href="{% url 'explore' %}" 
+           class="w-full sm:w-auto bg-green-500 text-white px-6 py-3 rounded-md text-base sm:text-lg font-semibold shadow-md hover:bg-green-600 transition text-center">
+            Explore Recipes
+        </a>
+
+        <a href="{% url 'profiles:profile' %}" 
+           class="w-full sm:w-auto bg-blue-500 text-white px-6 py-3 rounded-md text-base sm:text-lg font-semibold shadow-md hover:bg-blue-600 transition text-center">
+            Go to Profile
+        </a>
+    </div>
+
+    <!-- Logout Link -->
+    <a href="{% url 'account_logout' %}" 
+       class="mt-6 text-red-500 font-semibold hover:text-red-600 transition">
+        Logout
+    </a>
+</div>
+
+
 {% endblock %}

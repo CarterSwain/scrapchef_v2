@@ -104,6 +104,9 @@ TEMPLATES = [
     },
 ]
 
+ACCOUNT_LOGOUT_TEMPLATE = "account/logout.html"
+
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
@@ -172,12 +175,13 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
+
 # Use email as the primary identifier
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False  
+ACCOUNT_UNIQUE_EMAIL = True  # Ensure unique emails
 ACCOUNT_EMAIL_VERIFICATION = "optional"  # Or set to "mandatory" if needed
-
 
 
 # Site ID for Django Allauth (Required)
