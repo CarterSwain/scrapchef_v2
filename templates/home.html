@@ -3,14 +3,14 @@
 
 {% block content %}
   <!-- Hero Section -->
-<section class="text-center z-10 flex flex-col items-center justify-center py-20 bg-orange-100 border border-blue-500 border-1 rounded-lg p-8">
-    <h1 class="font-amatic text-7xl font-bold text-gray-900">ScrapChef</h1>
-    <p class="text-xl text-gray-700 mt-2">Waste Less. Feast More.</p>
+<section class="text-center z-10 flex flex-col items-center justify-center py-20 bg-orange-100 rounded-lg border-blue-300 border-2 p-8">
+    <h1 class="font-amatic text-7xl font-bold text-black">ScrapChef 🍅</h1>
+    <p class="text-xl text-gray-900 mt-2">Waste Less. Feast More.</p>
 
     <!-- Call to Action -->
     <div class="mt-6">
         <a href="{% url 'generate_recipe' %}" 
-           class="bg-green-500 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-lg hover:bg-green-700 transition inline-block">
+           class="bg-green-500 text-white px-6 py-3 rounded-md text-lg shadow-lg hover:bg-green-700 transition inline-block">
             Generate a Recipe
         </a>
     </div>
