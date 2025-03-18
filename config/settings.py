@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import environ
 import os
+import dj_database_url
 from pathlib import Path
 
 
@@ -32,9 +33,11 @@ OPENAI_API_KEY = env("OPENAI_API_KEY", default=None)
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+
 
 
 # Application definition
@@ -46,6 +49,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    
+    # Add Whitenoise here
+    'whitenoise.runserver_nostatic', 
     
     # Styling
     'tailwind',
@@ -82,6 +89,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
+     # Add Whitenoise middleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    
      # Required for Django Allauth
     'allauth.account.middleware.AccountMiddleware',
 ]
@@ -114,8 +124,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(),
+    'default': dj_database_url.config(
+        default=env("DATABASE_URL")
+    )
 }
+
 
 
 
@@ -154,6 +167,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
+
+# Enable static files compression & caching for production
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -209,6 +227,12 @@ ACCOUNT_LOGIN_METHODS = {'email'}  # Authenticate via email
 # Styling app for Tailwind
 TAILWIND_APP_NAME = "theme"
 
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
+TIME_ZONE = 'America/Chicago'  
 
