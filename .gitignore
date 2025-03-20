@@ -24,4 +24,6 @@ db.sqlite3
 theme/static/css/output.css
 node_modules/
 
+#Secrets
 .env
+env.yaml
