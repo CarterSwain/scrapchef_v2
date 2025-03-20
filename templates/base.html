@@ -15,33 +15,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
    
 
-  <!---  <style>
-        body {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        @media (max-width: 640px) {
-            body {
-                background-image: url("{% static 'images/ScrapChefMobileBG.png' %}");
-            }
-        }
-
-        @media (min-width: 641px) and (max-width: 1024px) {
-            body {
-                background-image: url("{% static 'images/ScrapChefTabletBG.png' %}");
-            }
-        }
-
-        @media (min-width: 1025px) {
-            body {
-                background-image: url("{% static 'images/ScrapChefBG2.png' %}");
-            }
-        }
-    </style> -->
-
-
 </head>
 <body class="font-poppins bg-orange-300 min-h-screen flex flex-col">
 
@@ -64,9 +37,6 @@
             <nav id="menu" class="hidden md:flex md:space-x-6 md:items-center absolute md:static top-16 left-0 w-full bg-orange-100 md:bg-transparent bg-opacity-85 text-center md:text-left md:w-auto z-50">
                 <a href="{% url 'home' %}" class="block md:inline-block text-gray-900 hover:text-blue-500 py-2 px-4">Home</a>
                 <a href="{% url 'account_login' %}" class="block md:inline-block text-gray-900 hover:text-blue-500 py-2 px-4">Login</a>
-                <a href="{% url 'account_login' %}" class="block md:inline-block text-gray-900 hover:text-blue-500 py-2 px-4">
-                    Register 
-                </a>
                 <a href="{% url 'profiles:profile' %}" class="block md:inline-block text-gray-900 hover:text-blue-500 py-2 px-4">My Profile</a>
                 <a href="{% url 'generate_recipe' %}" class="block md:inline-block text-gray-900 hover:text-blue-500 py-2 px-4">Generate Recipe</a>
                 <a href="{% url 'explore' %}" class="block md:inline-block text-gray-900 hover:text-blue-500 py-2 px-4">Explore</a>
@@ -94,6 +64,31 @@
             menu.classList.toggle("hidden");
             menu.classList.toggle("z-50");
         });
-    </script>
+
+        // Close menu if clicking outside (for better UX)
+        document.addEventListener("click", (event) => {
+            if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+                menu.classList.add("hidden");
+            }
+        });
+    
+    function isInAppBrowser() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return (
+            ua.includes("FBAN") || ua.includes("FBAV") ||  // Facebook
+            ua.includes("Instagram") ||                    // Instagram
+            ua.includes("Twitter") ||                      // Twitter
+            ua.includes("Snapchat") ||                     // Snapchat
+            ua.includes("LinkedIn")                        // LinkedIn
+        );
+    }
+
+    if (isInAppBrowser()) {
+        alert("Google login does not work in in-app browsers. Re-directing you to ScrapChef now.");
+        window.location.href = "https://scrapchefapp.com";  // Redirect only after alert
+    }
+
+</script>
+
 </body>
 </html>
