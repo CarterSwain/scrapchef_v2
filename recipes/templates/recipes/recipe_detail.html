@@ -19,8 +19,16 @@
     
     <div class="mb-4">
       <label class="block text-lg font-semibold text-gray-700" for="id_ingredients">Enter Ingredients:</label>
-      <p class="text-sm text-gray-500 mb-2">You can list up to 15 ingredients, separated by commas.</p>
+      <p class="text-sm text-gray-500 mb-2">
+        You can list up to <span class="font-bold text-gray-800">15 ingredients</span>, separated by commas.
+      </p>
+
       {{ form.ingredients }}
+      
+      <!-- Character Counter -->
+      <p id="ingredient-counter" class="text-sm mt-2">
+        <span id="current-count">0</span> / 15 ingredients entered
+      </p>
     </div>
 
     <button type="submit" id="generate-btn" class="bg-green-500 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-green-600 transition w-full">
@@ -63,11 +71,34 @@
     </div>
   {% endif %}
 
-  <!-- JavaScript for Spinner -->
+  <!-- JavaScript for Character Counter and Spinner -->
   <script>
     function showLoadingSpinner() {
       document.getElementById("generate-btn").disabled = true; // Disable button
       document.getElementById("loading-spinner").classList.remove("hidden"); // Show spinner
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputField = document.getElementById("id_ingredients");
+      const counter = document.getElementById("current-count");
+      const submitBtn = document.getElementById("generate-btn");
+
+      inputField.addEventListener("input", function () {
+        let ingredients = inputField.value.split(",").map(i => i.trim()).filter(i => i !== "");
+        let ingredientCount = ingredients.length;
+
+        counter.textContent = ingredientCount;
+
+        if (ingredientCount > 15) {
+          counter.classList.add("text-red-500");
+          submitBtn.disabled = true;
+          submitBtn.classList.add("bg-gray-400", "cursor-not-allowed");
+        } else {
+          counter.classList.remove("text-red-500");
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("bg-gray-400", "cursor-not-allowed");
+        }
+      });
+    });
   </script>
 {% endblock %}
