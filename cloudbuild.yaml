@@ -1,0 +1,9 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['run', 'deploy', 'scrapchef-v2', '--image=us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest', '--region=us-central1']
+images:
+  - 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest'
