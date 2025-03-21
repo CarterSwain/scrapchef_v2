@@ -24,6 +24,10 @@ db.sqlite3
 theme/static/css/output.css
 node_modules/
 
-#Secrets
+# Secrets
 .env
 env.yaml
+
+# Static & Media files
+staticfiles/ 
+media/
