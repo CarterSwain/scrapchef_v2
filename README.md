@@ -1,5 +1,7 @@
 ScrapChef 🧑‍🍳✨
 
+(Testing Auto Deployment)
+
 An AI-powered recipe generator that helps users create unique dishes based on available ingredients.
 
 DEPLOYED @ https://scrapchefapp.com 
