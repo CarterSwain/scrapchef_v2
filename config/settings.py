@@ -71,6 +71,9 @@ INSTALLED_APPS = [
     'recipes',
     'profiles',
     'explore', 
+    
+    # Google Storage for images
+    'storages',
 ]
 
 
@@ -240,3 +243,15 @@ if not DEBUG:
 
 TIME_ZONE = 'America/Chicago'  
 
+# === Google Cloud Storage for Media Files ===
+if not DEBUG:
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_BUCKET_NAME = env('GS_BUCKET_NAME') 
+    GS_DEFAULT_ACL = 'publicRead'
+    
+    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
+
+    # Optional cache control for uploaded files
+    GS_OBJECT_PARAMETERS = {
+        "Cache-Control": "public, max-age=86400",
+    }

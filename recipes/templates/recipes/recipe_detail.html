@@ -45,16 +45,22 @@
   <!-- Recipe Display Section -->
   {% if recipe %}
     <div class="mt-10 bg-white/90 shadow-lg rounded-xl p-6 w-full max-w-lg mx-auto">
+      {% if recipe.image_url %}
+      <div class="mb-6">
+        <img src="{{ recipe.image_url }}" alt="Image of {{ recipe.title }}" class="rounded-lg shadow-md w-full">
+      </div>
+      {% endif %}
+
       <h3 class="text-2xl font-bold text-gray-900">{{ recipe.title }}</h3>
 
       <div class="mt-4">
         <h4 class="text-lg font-semibold text-gray-800">Ingredients:</h4>
-        <pre class="whitespace-pre-wrap bg-cream p-4 rounded-md text-gray-700">{{ recipe.ingredients }}</pre>
+        <pre class="whitespace-pre-wrap bg-yellow-50 p-4 rounded-md text-gray-700">{{ recipe.ingredients }}</pre>
       </div>
 
       <div class="mt-4">
         <h4 class="text-lg font-semibold text-gray-800">Instructions:</h4>
-        <pre class="whitespace-pre-wrap bg-cream p-4 rounded-md text-gray-700">{{ recipe.instructions }}</pre>
+        <pre class="whitespace-pre-wrap bg-yellow-50 rounded-md text-gray-700">{{ recipe.instructions }}</pre>
       </div>
 
       <!-- Save Recipe Form -->
@@ -63,6 +69,8 @@
         <input type="hidden" name="recipe_name" value="{{ recipe.title }}">
         <input type="hidden" name="ingredients" value="{{ recipe.ingredients }}">
         <input type="hidden" name="instructions" value="{{ recipe.instructions }}">
+        <input type="hidden" name="image_url" value="{{ recipe.image_url }}">
+
 
         <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-blue-600 transition w-full">
           Save Recipe

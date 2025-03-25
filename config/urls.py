@@ -19,6 +19,8 @@ from django.urls import path, include
 from django.shortcuts import render
 from allauth.account.views import LogoutView
 from accounts.views import logout_view, profile_view
+from django.conf import settings
+from django.conf.urls.static import static
 
 # Simple home view
 def home_view(request):
@@ -51,3 +53,6 @@ urlpatterns = [
     path("explore/", include("explore.urls")),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

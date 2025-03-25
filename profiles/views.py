@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.core.files.storage import default_storage
 from .forms import IngredientPreferencesForm
 from .models import SavedRecipe, UserProfile
 from recipes.models import Recipe
@@ -30,15 +31,23 @@ def save_recipe(request):
         recipe_name = request.POST.get("recipe_name")
         ingredients = request.POST.get("ingredients")
         instructions = request.POST.get("instructions")
+        image_url = request.POST.get("image_url")
+        
 
         # Find or create the corresponding Recipe
         recipe, created = Recipe.objects.get_or_create(
             title=recipe_name,
             defaults={
                 "ingredients": ingredients,
-                "instructions": instructions
+                "instructions": instructions,
+                "image_url": image_url
             }
         )
+        
+        # If the recipe already exists but image_url is missing, update it
+        if not recipe.image_url and image_url:
+            recipe.image_url = image_url
+            recipe.save()
 
         # Create a new SavedRecipe linked to the Recipe
         saved_recipe = SavedRecipe.objects.create(
@@ -46,7 +55,8 @@ def save_recipe(request):
             recipe=recipe,
             recipe_name=recipe.title,
             ingredients=recipe.ingredients,
-            instructions=recipe.instructions
+            instructions=recipe.instructions,
+            image_url=recipe.image_url
         )
 
         return redirect("profiles:profile")  # Redirect to the user's profile page
@@ -63,8 +73,28 @@ def edit_saved_recipe(request, recipe_id):
         recipe.recipe_name = request.POST['recipe_name']
         recipe.ingredients = request.POST['ingredients']
         recipe.instructions = request.POST['instructions']
+
+        # Handle optional user image
+        if 'uploaded_image' in request.FILES:
+            # If a new image was uploaded, delete the old one
+            if recipe.uploaded_image and default_storage.exists(recipe.uploaded_image.name):
+                default_storage.delete(recipe.uploaded_image.name)
+
+            recipe.uploaded_image = request.FILES['uploaded_image']
+            recipe.use_uploaded_image = True  # default to using the uploaded one if provided
+
+        elif 'remove_uploaded_image' in request.POST:
+            if recipe.uploaded_image and default_storage.exists(recipe.uploaded_image.name):
+                default_storage.delete(recipe.uploaded_image.name)
+            recipe.uploaded_image = None
+            recipe.use_uploaded_image = False
+
+        else:
+            # Checkbox for using uploaded image
+            recipe.use_uploaded_image = request.POST.get('use_uploaded_image') == 'on'
+
         recipe.save()
-        return redirect('profiles:profile')  # Redirect back to the profile page
+        return redirect('profiles:profile')
 
     return render(request, 'profiles/edit_recipe.html', {'recipe': recipe})
 

@@ -105,6 +105,25 @@ def generate_recipe(ingredients, user):
                 "instructions": raw_recipe  # Save full response as instructions
             }
 
+        # DALL·E Image Generation (now runs regardless of regex outcome)
+        try:
+            image_prompt = (
+                f"A realistic overhead photo of a plated dish called '{recipe_data['title']}', made strictly with only the following ingredients: {ingredients_list}. "
+                "Do NOT include any ingredients or garnishes not listed. Do NOT include any text, labels, writing, or characters in the image.. No background props or items outside the dish. The food should look vibrant, appetizing, and clearly reflect ONLY the given ingredients in list."
+            )
+
+            image_response = openai_client.images.generate(
+                model="dall-e-3",
+                prompt=image_prompt,
+                size="1024x1024",
+                quality="standard",
+                n=1
+            )
+            recipe_data["image_url"] = image_response.data[0].url
+        except Exception as e:
+            logger.error(f"DALL·E image generation failed: {e}")
+            recipe_data["image_url"] = None
+
         return recipe_data, None  # Return structured data and no error
 
     except openai.APIError as e:
@@ -118,7 +137,6 @@ def generate_recipe(ingredients, user):
     except Exception as e:
         logger.error(f"Unhandled error: {e}")
         return None, "Error: Something went wrong. Please try again."
-
 
 
 

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.validators import FileExtensionValidator
 from recipes.models import Recipe 
 
 class UserProfile(models.Model):
@@ -38,6 +39,14 @@ class SavedRecipe(models.Model):
     recipe_name = models.CharField(max_length=255)
     ingredients = models.TextField()
     instructions = models.TextField()
+    image_url = models.URLField(max_length=500, blank=True, null=True)
+    uploaded_image = models.ImageField(
+        upload_to='user_uploaded_recipes/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]
+    )
+    use_uploaded_image = models.BooleanField(default=False)  # Checkbox toggle
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

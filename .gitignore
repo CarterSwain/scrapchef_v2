@@ -27,7 +27,11 @@ node_modules/
 # Secrets
 .env
 env.yaml
+.env.local
 
 # Static & Media files
 staticfiles/ 
 media/
+
+# Local Settings
+config/settings_local.py
