@@ -16,5 +16,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Expose port 8080 for Cloud Run
 EXPOSE 8080
 
-# Run migrations & collect static at container startup
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8080 config.wsgi:application"]
+# Collect static files and run migrations on container startup
+# Cloud Run expects the app to start quickly, so we use gunicorn as entrypoint
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "config.wsgi:application"]
+
