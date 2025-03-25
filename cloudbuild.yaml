@@ -2,33 +2,19 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build',
+      '--cache-from', 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest',
       '-t', 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest',
       '.'
     ]
-
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest']
-
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
-    args:
-      - -c
-      - |
-        gcloud run deploy scrapchef-v2 \
-          --image=us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest \
-          --region=us-central1 \
-          --platform=managed \
-          --allow-unauthenticated
-
-        gcloud run jobs describe run-migrations --region=us-central1 || \
-        gcloud run jobs create run-migrations \
-          --image=us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest \
-          --region=us-central1 \
-          --command=python \
-          --args=manage.py,migrate \
-          --max-retries=1
-
-        gcloud run jobs execute run-migrations --region=us-central1
-
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'run', 'deploy', 'scrapchef-v2',
+      '--image', 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
 images:
   - 'us-central1-docker.pkg.dev/scrapchef-v2/cloud-run-source-deploy/scrapchef_v2:latest'
