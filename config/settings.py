@@ -245,13 +245,23 @@ TIME_ZONE = 'America/Chicago'
 
 # === Google Cloud Storage for Media Files ===
 if not DEBUG:
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    GS_BUCKET_NAME = env('GS_BUCKET_NAME') 
-    GS_DEFAULT_ACL = 'publicRead'
-    
+    GS_BUCKET_NAME = env('GS_BUCKET_NAME')
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "bucket_name": GS_BUCKET_NAME,
+                "default_acl": "publicRead",
+                "cache_control": "public, max-age=86400",
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
     MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
 
-    # Optional cache control for uploaded files
-    GS_OBJECT_PARAMETERS = {
-        "Cache-Control": "public, max-age=86400",
-    }
+
+
