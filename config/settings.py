@@ -245,23 +245,30 @@ TIME_ZONE = 'America/Chicago'
 
 # === Google Cloud Storage for Media Files ===
 if not DEBUG:
-    GS_BUCKET_NAME = env('GS_BUCKET_NAME')
-
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(BASE_DIR, "scrapchef-v2-d94b7aa974b9.json")
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
             "OPTIONS": {
-                "bucket_name": GS_BUCKET_NAME,
+                "bucket_name": env("GS_BUCKET_NAME"),
+                "project_id": "scrapchef-v2",  
                 "default_acl": "publicRead",
-                "cache_control": "public, max-age=86400",
+                "file_overwrite": False,
             },
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "bucket_name": env("GS_BUCKET_NAME"),
+                "project_id": "scrapchef-v2",
+                "location": "static",
+                "default_acl": "publicRead",
+                "file_overwrite": False,
+            },
         },
     }
 
-    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
-
+    MEDIA_URL = f"https://storage.googleapis.com/{env('GS_BUCKET_NAME')}/user_uploaded_recipes/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  
 
 
